@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "MainCharacter.generated.h"
+#include "MyCharacter.generated.h"
 
 UCLASS()
-class EOTA_API AMainCharacter : public ACharacter
+class EOTA_API AMyCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AMainCharacter();
+	AMyCharacter();
 
 protected:
 	// Called when the game starts or when spawned
@@ -25,14 +25,5 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UFUNCTION()
-	void MoveForward(float Value);
-
-	UFUNCTION()
-	void MoveRight(float Value);
-
-	UFUNCTION()
-	void ShowPos();
 
 };
