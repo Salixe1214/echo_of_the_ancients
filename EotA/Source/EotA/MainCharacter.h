@@ -4,12 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "MainCharacter.generated.h"
+
 
 UCLASS()
 class EOTA_API AMainCharacter : public ACharacter
 {
 	GENERATED_BODY()
+
+	/** Camera boom positioning the camera behind the character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	USpringArmComponent* CameraBoom;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UCameraComponent* FollowCamera;
 
 public:
 	// Sets default values for this character's properties
@@ -33,6 +45,10 @@ public:
 	void MoveRight(float Value);
 
 	UFUNCTION()
+	void LookUp(float Value);
+
+	UFUNCTION()
 	void ShowPos();
+
 
 };

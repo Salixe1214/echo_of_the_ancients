@@ -9,6 +9,19 @@ AMainCharacter::AMainCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	bUseControllerRotationPitch = false;
+
+	// Create a camera boom (pulls in towards the player if there is a collision)
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->TargetArmLength = 1000.0f; // The camera follows at this distance behind the character	
+	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+
+	// Create a follow camera
+	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
 }
 
 // Called when the game starts or when spawned
@@ -39,6 +52,8 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	// Setting movement bindings
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMainCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMainCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("LookAround", this, &AMainCharacter::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("LookUp", this, &AMainCharacter::LookUp);
 	PlayerInputComponent->BindAction("ShowPos", IE_Pressed, this, &AMainCharacter::ShowPos);
 
 }
@@ -48,14 +63,21 @@ void AMainCharacter::MoveForward(float Value)
 	// Find out which way is "forward" and record that the player wants to move that way.
 	FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X);
 	AddMovementInput(Direction, Value);
-
 }
 
 void AMainCharacter::MoveRight(float Value)
 {
-	// Find out which way is "right" and record that the player wants to move that way.
 	FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y);
 	AddMovementInput(Direction, Value);
+}
+
+void AMainCharacter::LookUp(float Value)
+{
+	if (Controller != nullptr)
+	{
+		// add yaw and pitch input to controller
+		AddControllerPitchInput(Value);
+	}
 }
 
 void AMainCharacter::ShowPos()
